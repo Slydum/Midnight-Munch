@@ -1,7 +1,9 @@
 // Midnight Munch service worker: cache the app shell so the grocery list
 // keeps working inside the wet market where signal is weak or absent.
-const CACHE = 'midnight-munch-v1';
-const APP_SHELL = ['/', '/index.html'];
+const CACHE = 'midnight-munch-v2';
+// Relative to the SW's own location so it works under a subpath deploy
+// (e.g. GitHub Pages project sites).
+const APP_SHELL = ['./', './index.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(APP_SHELL)));
@@ -31,7 +33,7 @@ self.addEventListener('fetch', (event) => {
         return res;
       })
       .catch(() =>
-        caches.match(event.request).then((hit) => hit || caches.match('/index.html'))
+        caches.match(event.request).then((hit) => hit || caches.match('./index.html'))
       )
   );
 });
