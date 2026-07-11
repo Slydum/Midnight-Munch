@@ -11,12 +11,12 @@ import { isRemote } from './lib/supabase.js';
 import { useOnline } from './lib/useData.js';
 
 const NAV = [
-  { to: '/', label: 'Dashboard', end: true },
-  { to: '/plan', label: 'Plan' },
-  { to: '/groceries', label: 'Groceries' },
-  { to: '/library', label: 'Library' },
-  { to: '/fridge', label: 'Fridge Scan' },
-  { to: '/history', label: 'History' },
+  { to: '/', label: 'Home', icon: '🏠', end: true },
+  { to: '/plan', label: 'Plan', icon: '🍽️' },
+  { to: '/groceries', label: 'Market', icon: '🧺' },
+  { to: '/library', label: 'Library', icon: '📖' },
+  { to: '/fridge', label: 'Fridge', icon: '📷' },
+  { to: '/history', label: 'History', icon: '🕘' },
 ];
 
 export default function App() {
@@ -31,8 +31,8 @@ export default function App() {
 
   return (
     <>
-      <nav className="nav">
-        <div className="nav-inner">
+      <nav className="topbar">
+        <div className="topbar-inner">
           <span className="nav-brand">🌙 Midnight Munch</span>
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
@@ -52,8 +52,8 @@ export default function App() {
         </div>
       )}
       {!isRemote && (
-        <div className="offline-banner" style={{ background: 'var(--color-accent)', color: 'var(--color-text)' }}>
-          Demo mode (device-only storage). Set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY to sync between both of you.
+        <div className="notice-banner">
+          Demo mode — data stays on this device until Supabase is connected (see README).
         </div>
       )}
 
@@ -67,6 +67,16 @@ export default function App() {
           <Route path="/history" element={<HistoryPage />} />
         </Routes>
       </main>
+
+      {/* App-style bottom tabs on phones; hidden on desktop */}
+      <nav className="tabbar">
+        {NAV.map((n) => (
+          <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>
+            <span className="tab-icon">{n.icon}</span>
+            {n.label}
+          </NavLink>
+        ))}
+      </nav>
     </>
   );
 }

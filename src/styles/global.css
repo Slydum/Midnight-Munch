@@ -16,31 +16,61 @@ input, select, textarea { font: inherit; color: inherit; }
 a { color: inherit; }
 
 .container { max-width: 1080px; margin: 0 auto; padding: 16px; }
+/* room for the fixed bottom tab bar on phones */
+@media (max-width: 767px) {
+  .container { padding: 12px 12px calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
 
-/* ---- nav ---- */
-.nav {
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+h1 { font-size: clamp(1.15rem, 4vw, 1.4rem); }
+
+/* ---- top bar: brand + theme toggle (nav links desktop-only) ---- */
+.topbar {
+  background: var(--color-topbar);
+  color: var(--color-topbar-text);
   position: sticky;
   top: 0;
   z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
 }
-.nav-inner {
+.topbar-inner {
   max-width: 1080px; margin: 0 auto;
   display: flex; align-items: center; gap: 4px;
-  padding: 8px 16px; flex-wrap: wrap;
+  padding: 10px 16px;
 }
 .nav-brand { font-weight: 700; font-size: 1.05rem; margin-right: 12px; white-space: nowrap; }
-.nav a.nav-link {
+.topbar a.nav-link {
   text-decoration: none; padding: 6px 10px; border-radius: 8px;
   font-size: 0.92rem; opacity: 0.85;
 }
-.nav a.nav-link.active { background: rgba(0,0,0,0.18); opacity: 1; font-weight: 600; }
-.nav a.nav-link:hover { opacity: 1; }
+.topbar a.nav-link.active { background: rgba(0,0,0,0.22); opacity: 1; font-weight: 600; }
+.topbar a.nav-link:hover { opacity: 1; }
 .nav-spacer { flex: 1; }
 .theme-toggle {
-  background: transparent; border: 1px solid rgba(255,255,255,0.4);
+  background: transparent; border: 1px solid rgba(254,250,224,0.35);
   color: inherit; border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;
+}
+@media (max-width: 767px) {
+  .topbar a.nav-link { display: none; }
+}
+
+/* ---- bottom tab bar (phones) ---- */
+.tabbar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+  display: flex;
+  background: var(--color-tabbar);
+  border-top: 1px solid var(--color-border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.tabbar a {
+  flex: 1; text-decoration: none; text-align: center;
+  padding: 8px 2px 6px; color: var(--color-text-muted);
+  font-size: 0.62rem; font-weight: 600; line-height: 1.2;
+}
+.tabbar a .tab-icon { display: block; font-size: 1.25rem; margin-bottom: 1px; }
+.tabbar a.active { color: var(--color-primary); }
+[data-theme='dark'] .tabbar a.active { color: var(--color-accent); }
+@media (min-width: 768px) {
+  .tabbar { display: none; }
 }
 
 /* ---- cards & shared ---- */
@@ -105,7 +135,7 @@ label.field > * { margin-top: 4px; font-weight: 400; }
 }
 .progress-fill {
   height: 100%; border-radius: 999px;
-  background: var(--color-primary);
+  background: var(--color-progress);
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
 }
 .progress-fill.over { background: var(--color-warn); }
@@ -150,7 +180,12 @@ label.field > * { margin-top: 4px; font-weight: 400; }
 
 .offline-banner {
   background: var(--color-warn); color: #fff;
-  text-align: center; padding: 6px; font-size: 0.85rem; font-weight: 600;
+  text-align: center; padding: 6px 12px; font-size: 0.8rem; font-weight: 600;
+}
+.notice-banner {
+  background: var(--color-surface-alt); color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  text-align: center; padding: 5px 12px; font-size: 0.75rem;
 }
 
 .mantra-card {

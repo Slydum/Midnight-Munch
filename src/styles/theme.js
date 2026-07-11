@@ -10,33 +10,41 @@ export const palette = {
   rust: '#BC6C25', // CTAs, "low nutrition" flags, "over budget" warnings
 };
 
+// Tan is deliberately used sparingly (accents/highlights only) — as a
+// dominant color it fights the greens, especially in dark mode.
 export const themes = {
   light: {
     '--color-bg': palette.cream,
     '--color-surface': '#FFFFFF',
-    '--color-surface-alt': '#FBF3D5',
+    '--color-surface-alt': '#F6EFCF',
     '--color-text': palette.forest,
-    '--color-text-muted': '#5C6248',
+    '--color-text-muted': '#6B7052',
     '--color-primary': palette.olive,
     '--color-primary-contrast': palette.cream,
     '--color-accent': palette.tan,
     '--color-warn': palette.rust,
-    '--color-ok': palette.olive,
+    '--color-progress': palette.olive,
     '--color-border': '#E4DCB8',
+    '--color-topbar': palette.olive,
+    '--color-topbar-text': palette.cream,
+    '--color-tabbar': '#FFFFFF',
     '--shadow-card': '0 2px 8px rgba(40, 54, 24, 0.10)',
   },
   dark: {
     '--color-bg': palette.forest,
-    '--color-surface': '#33421F',
-    '--color-surface-alt': '#3D4D26',
+    '--color-surface': '#31401D',
+    '--color-surface-alt': '#3A4B23',
     '--color-text': palette.cream,
-    '--color-text-muted': '#C9C5A5',
-    '--color-primary': palette.tan,
-    '--color-primary-contrast': palette.forest,
-    '--color-accent': palette.olive,
+    '--color-text-muted': '#BBC09B',
+    '--color-primary': palette.olive,
+    '--color-primary-contrast': palette.cream,
+    '--color-accent': palette.tan,
     '--color-warn': palette.rust,
-    '--color-ok': palette.tan,
-    '--color-border': '#465428',
+    '--color-progress': '#8C9C55', // lightened olive so bars read on dark surfaces
+    '--color-border': '#44552A',
+    '--color-topbar': '#223013',
+    '--color-topbar-text': palette.cream,
+    '--color-tabbar': '#223013',
     '--shadow-card': '0 2px 10px rgba(0, 0, 0, 0.35)',
   },
 };
