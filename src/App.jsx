@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Routes, Route, NavLink } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage.jsx';
 import PlanPage from './pages/PlanPage.jsx';
+import CookingBuddyPage from './pages/CookingBuddyPage.jsx';
 import GroceriesPage from './pages/GroceriesPage.jsx';
 import LibraryPage from './pages/LibraryPage.jsx';
 import FridgePage from './pages/FridgePage.jsx';
@@ -13,6 +14,7 @@ import { useOnline } from './lib/useData.js';
 const NAV = [
   { to: '/', label: 'Home', icon: '🏠', end: true },
   { to: '/plan', label: 'Plan', icon: '🍽️' },
+  { to: '/cook', label: 'Cook', icon: '👩‍🍳' },
   { to: '/groceries', label: 'Market', icon: '🧺' },
   { to: '/library', label: 'Library', icon: '📖' },
   { to: '/fridge', label: 'Fridge', icon: '📷' },
@@ -61,6 +63,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/plan" element={<PlanPage />} />
+          <Route path="/cook" element={<CookingBuddyPage />} />
           <Route path="/groceries" element={<GroceriesPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/fridge" element={<FridgePage />} />
@@ -68,7 +71,6 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* App-style bottom tabs on phones; hidden on desktop */}
       <nav className="tabbar">
         {NAV.map((n) => (
           <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>
