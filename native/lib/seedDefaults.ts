@@ -1,0 +1,1 @@
+export const DEFAULT_SETTINGS={id:"main",budget_ceiling:1500,cooldown_days:10,mantra:"Good food, a calmer home, and a little time together."};
