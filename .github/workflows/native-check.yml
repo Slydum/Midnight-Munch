@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-audit --no-fund
-      - run: npx expo install --check
+      - run: npx expo install --fix
       - run: npx expo export --platform all
       - run: npx tsc --noEmit
