@@ -78,3 +78,16 @@ create policy "open access" on settings for all using (true) with check (true);
 create policy "open access" on cooking_sessions for all using (true) with check (true);
 
 alter publication supabase_realtime add table meals, week_plans, leftovers, saved_weeks, settings, cooking_sessions;
+
+-- Native app fridge / pantry inventory.
+create table if not exists fridge_items (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  quantity text not null default '1',
+  added_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+alter table fridge_items enable row level security;
+drop policy if exists "open access" on fridge_items;
+create policy "open access" on fridge_items for all using (true) with check (true);
+alter publication supabase_realtime add table fridge_items;
