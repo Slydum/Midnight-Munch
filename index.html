@@ -16,16 +16,25 @@
   <body>
     <div id="root"><p style="padding:24px;font-family:system-ui">Loading Midnight Munch…</p></div>
     <script>
+      window.__MM_MODULE_LOADED__ = false;
       window.addEventListener('error', (event) => {
         const root = document.getElementById('root');
-        if (root) root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">Midnight Munch could not start.\n' + String(event.message || 'A script failed to load') + '\n\nRefresh the page. If this keeps happening, send this message to support.</pre>';
+        if (root && event.message) root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">Startup error: ' + String(event.message) + '</pre>';
       });
       window.addEventListener('unhandledrejection', (event) => {
         const root = document.getElementById('root');
-        if (root) root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">Midnight Munch hit an error.\n' + String(event.reason?.message || event.reason || 'Unknown error') + '</pre>';
+        if (root) root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">Startup error: ' + String(event.reason?.message || event.reason || 'Unknown error') + '</pre>';
       });
+      window.setTimeout(() => {
+        const root = document.getElementById('root');
+        if (root && !window.__MM_MODULE_LOADED__) {
+          root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">The Midnight Munch JavaScript bundle did not load. This is a deployment asset-loading problem, not a phone setting. Please send this screen to support.</pre>';
+        }
+      }, 7000);
     </script>
-    <script type="module" src="./src/main.jsx"></script>
+    <script type="module" src="./src/main.jsx"
+      onload="window.__MM_MODULE_LOADED__ = true"
+      onerror="document.getElementById('root').innerHTML = '<pre style=&quot;padding:24px;font:14px system-ui;color:#8b1e1e&quot;>Could not download the Midnight Munch app bundle. Please try again shortly.</pre>'"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
