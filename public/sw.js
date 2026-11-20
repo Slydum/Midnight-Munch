@@ -1,5 +1,5 @@
 // Cache the PWA shell and local assets; never intercept Supabase/API requests.
-const CACHE = 'midnight-munch-v5';
+const CACHE = 'midnight-munch-v6';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {
