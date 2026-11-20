@@ -1,39 +1,23 @@
-// Midnight Munch service worker: cache the app shell so the grocery list
-// keeps working inside the wet market where signal is weak or absent.
-const CACHE = 'midnight-munch-v2';
-// Relative to the SW's own location so it works under a subpath deploy
-// (e.g. GitHub Pages project sites).
-const APP_SHELL = ['./', './index.html'];
+// Cache the PWA shell and local assets; never intercept Supabase/API requests.
+const CACHE = 'midnight-munch-v3';
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(APP_SHELL)));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
-
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
-  );
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))));
   self.clients.claim();
 });
-
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  if (event.request.method !== 'GET') return;
-  // Never intercept API traffic (Supabase, recipe search, etc.)
-  if (url.origin !== self.location.origin) return;
-
+  if (event.request.method !== 'GET' || url.origin !== self.location.origin) return;
   event.respondWith(
-    fetch(event.request)
-      .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(event.request, copy));
-        return res;
-      })
-      .catch(() =>
-        caches.match(event.request).then((hit) => hit || caches.match('./index.html'))
-      )
+    fetch(event.request).then((response) => {
+      const copy = response.clone();
+      caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+      return response;
+    }).catch(() => caches.match(event.request).then((hit) => hit || caches.match('./index.html')))
   );
 });
