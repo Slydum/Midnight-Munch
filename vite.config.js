@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  // Relative base so the build works at any URL (GitHub Pages project
-  // subpath, Vercel root, etc.) without configuration.
-  base: './',
+  // GitHub Pages serves this project beneath /Midnight-Munch/.
+  // An explicit base avoids ambiguous relative asset URLs on mobile Safari.
+  base: '/Midnight-Munch/',
   plugins: [react()],
 });
