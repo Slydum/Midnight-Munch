@@ -15,6 +15,16 @@
   </head>
   <body>
     <div id="root"><p style="padding:24px;font-family:system-ui">Loading Midnight Munch…</p></div>
+    <script>
+      window.addEventListener('error', (event) => {
+        const root = document.getElementById('root');
+        if (root) root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">Midnight Munch could not start.\n' + String(event.message || 'A script failed to load') + '\n\nRefresh the page. If this keeps happening, send this message to support.</pre>';
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const root = document.getElementById('root');
+        if (root) root.innerHTML = '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui;color:#8b1e1e">Midnight Munch hit an error.\n' + String(event.reason?.message || event.reason || 'Unknown error') + '</pre>';
+      });
+    </script>
     <script type="module" src="./src/main.jsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
