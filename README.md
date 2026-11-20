@@ -40,3 +40,8 @@ Without Supabase credentials, the app uses local device storage for demo mode. F
 ## Optional integrations
 
 Recipe search can use TheMealDB by default, with optional Google Custom Search credentials. Fridge photo recognition can be enabled with a Clarifai token.
+
+
+## Native app 2.0
+
+The Expo / React Native iOS and Android app is being developed in parallel under [`native/`](./native/README.md). It preserves the existing PWA while migrating the household meal planner, grocery list, recipe shelf, cooking companion, pantry, and history to native screens.
