@@ -1,67 +1,67 @@
-// Central design tokens for Midnight Munch — Warm Botanical / Harvest palette.
-// All components should consume these via CSS variables (injected below),
-// never hardcoded hex values.
-
+// Midnight Munch — warm modern kitchen palette.
 export const palette = {
-  olive: '#606C38', // primary: nav, headers, primary buttons
-  forest: '#283618', // dark mode background base
-  cream: '#FEFAE0', // light mode background base
-  tan: '#DDA15E', // accents, cards, secondary highlights
-  rust: '#BC6C25', // CTAs, "low nutrition" flags, "over budget" warnings
+  oat: '#F5F1E8',
+  paper: '#FFFDFA',
+  ink: '#34352F',
+  muted: '#77786D',
+  sage: '#788A72',
+  sageDeep: '#5F735C',
+  terracotta: '#C88772',
+  rose: '#D9AAA0',
+  line: '#E7E0D5',
 };
 
-// Tan is deliberately used sparingly (accents/highlights only) — as a
-// dominant color it fights the greens, especially in dark mode.
 export const themes = {
   light: {
-    '--color-bg': palette.cream,
-    '--color-surface': '#FFFFFF',
-    '--color-surface-alt': '#F6EFCF',
-    '--color-text': palette.forest,
-    '--color-text-muted': '#6B7052',
-    '--color-primary': palette.olive,
-    '--color-primary-contrast': palette.cream,
-    '--color-accent': palette.tan,
-    '--color-warn': palette.rust,
-    '--color-progress': palette.olive,
-    '--color-border': '#E4DCB8',
-    '--color-topbar': palette.olive,
-    '--color-topbar-text': palette.cream,
-    '--color-tabbar': '#FFFFFF',
-    '--shadow-card': '0 2px 8px rgba(40, 54, 24, 0.10)',
+    '--color-bg': palette.oat,
+    '--color-surface': palette.paper,
+    '--color-surface-alt': '#EEEAE0',
+    '--color-text': palette.ink,
+    '--color-text-muted': palette.muted,
+    '--color-primary': palette.sage,
+    '--color-primary-contrast': '#FFFFFF',
+    '--color-accent': palette.terracotta,
+    '--color-warn': '#B96F5D',
+    '--color-progress': palette.sage,
+    '--color-border': palette.line,
+    '--color-topbar': '#F8F5EE',
+    '--color-topbar-text': palette.ink,
+    '--color-tabbar': '#FFFDFA',
+    '--shadow-card': '0 5px 18px rgba(55, 49, 39, 0.055)',
   },
   dark: {
-    '--color-bg': palette.forest,
-    '--color-surface': '#31401D',
-    '--color-surface-alt': '#3A4B23',
-    '--color-text': palette.cream,
-    '--color-text-muted': '#BBC09B',
-    '--color-primary': palette.olive,
-    '--color-primary-contrast': palette.cream,
-    '--color-accent': palette.tan,
-    '--color-warn': palette.rust,
-    '--color-progress': '#8C9C55', // lightened olive so bars read on dark surfaces
-    '--color-border': '#44552A',
-    '--color-topbar': '#223013',
-    '--color-topbar-text': palette.cream,
-    '--color-tabbar': '#223013',
-    '--shadow-card': '0 2px 10px rgba(0, 0, 0, 0.35)',
+    '--color-bg': '#252722',
+    '--color-surface': '#30332D',
+    '--color-surface-alt': '#393D35',
+    '--color-text': '#F4F0E7',
+    '--color-text-muted': '#B8B9AC',
+    '--color-primary': '#91A38A',
+    '--color-primary-contrast': '#20251F',
+    '--color-accent': '#D6A091',
+    '--color-warn': '#D18B78',
+    '--color-progress': '#A3B69B',
+    '--color-border': '#484C43',
+    '--color-topbar': '#292C26',
+    '--color-topbar-text': '#F4F0E7',
+    '--color-tabbar': '#292C26',
+    '--shadow-card': '0 6px 20px rgba(0, 0, 0, 0.16)',
   },
 };
 
-const THEME_KEY = 'mm-theme';
+// Versioned key resets the old olive theme preference and starts in light mode.
+const THEME_KEY = 'mm-theme-v2';
 
 export function getSavedTheme() {
   const saved = localStorage.getItem(THEME_KEY);
-  if (saved === 'light' || saved === 'dark') return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return saved === 'dark' || saved === 'light' ? saved : 'light';
 }
 
 export function applyTheme(name) {
-  const vars = themes[name] || themes.light;
+  const selected = name === 'dark' ? 'dark' : 'light';
+  const vars = themes[selected];
   for (const [key, value] of Object.entries(vars)) {
     document.documentElement.style.setProperty(key, value);
   }
-  document.documentElement.dataset.theme = name;
-  localStorage.setItem(THEME_KEY, name);
+  document.documentElement.dataset.theme = selected;
+  localStorage.setItem(THEME_KEY, selected);
 }
