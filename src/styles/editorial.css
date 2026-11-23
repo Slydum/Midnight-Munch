@@ -212,3 +212,104 @@ input[type='text'],input[type='number'],input[type='search'],select,textarea { b
  .wizard-local-note { max-width:130px; font-size:10px; }
  .settings-page .setup-page { padding:0; }
 }
+
+
+/* Minimal, visual onboarding inspired by the supplied mobile references */
+.minimal-setup {
+ --m-ink:#25291f; --m-muted:#85897e; --m-green:#7eb438; --m-deep:#263b1c;
+ min-height:100svh; width:100%; max-width:760px; margin:0 auto;
+ padding:24px clamp(20px,5vw,46px) 150px; background:#fff;
+ color:var(--m-ink);
+}
+.minimal-brand { display:flex; align-items:center; gap:14px; margin:14px 0 44px; color:#8c9387; font-size:11px; font-weight:800; letter-spacing:.2em; }
+.minimal-mark { display:grid; place-items:center; width:54px; height:54px; border-radius:17px; background:#405b49; color:#fff; font-family:Georgia,serif; font-size:35px; font-weight:bold; letter-spacing:-.08em; }
+.minimal-progress-head { display:flex; align-items:center; gap:22px; margin:14px 0 38px; }
+.minimal-back { flex:none; width:58px; height:58px; border:0; border-radius:19px; background:#f0eee7; color:#282c23; font-size:38px; line-height:1; cursor:pointer; }
+.minimal-progress { flex:1; height:10px; border-radius:99px; overflow:hidden; background:#eeede7; }
+.minimal-progress span { display:block; height:100%; border-radius:inherit; background:#7eb438; transition:width .2s ease; }
+.minimal-edit-label { color:#8c9387; font-size:10px; font-weight:800; letter-spacing:.14em; }
+.minimal-heading { margin:0 0 30px; }
+.minimal-heading h1 { margin:0; color:#25291f; font-family:Arial,sans-serif; font-size:clamp(36px,6vw,52px); line-height:1.1; font-weight:750; letter-spacing:-.045em; }
+.minimal-heading p { max-width:600px; margin:24px 0 0; color:#8a8d83; font-size:clamp(19px,3vw,25px); line-height:1.5; font-weight:400; }
+.minimal-form { display:flex; flex-direction:column; min-height:calc(100svh - 250px); }
+.minimal-content { display:grid; gap:20px; }
+.people-card { display:flex; align-items:center; gap:18px; min-height:145px; padding:20px 22px; border-radius:34px; background:#fff; box-shadow:0 14px 40px rgba(38,46,31,.09); }
+.people-symbol { display:grid; place-items:center; flex:none; width:88px; height:88px; border-radius:27px; background:#eaf3dc; color:#7eb438; font-size:42px; }
+.people-copy { display:flex; flex:1; min-width:0; flex-direction:column; gap:7px; }
+.people-copy strong { font-size:clamp(23px,4vw,31px); font-weight:750; }
+.people-copy span { color:#898d82; font-size:clamp(16px,3vw,22px); }
+.count-button { display:grid; place-items:center; flex:none; width:76px; height:76px; border:0; border-radius:50%; background:#f7f7f5; color:#2b3026; font-size:38px; cursor:pointer; }
+.count-button:disabled { color:#b9bcb5; opacity:.65; }
+.count-button.add { background:#263b1c; color:#fff; }
+.count-value { min-width:24px; text-align:center; font-size:36px; }
+.portion-total { display:flex; align-items:center; justify-content:space-between; min-height:112px; margin-top:10px; padding:22px 30px; border-radius:32px; background:#f7f6f1; color:#898d82; font-size:clamp(20px,3.4vw,27px); font-weight:700; }
+.portion-total strong { color:#7eb438; font-size:40px; }
+.meal-options { gap:16px; }
+.meal-option { display:flex; align-items:center; gap:22px; min-height:138px; padding:20px 24px; border:3px solid #efeee8; border-radius:34px; background:#fff; text-align:left; cursor:pointer; }
+.meal-option.selected { border-color:#7eb438; }
+.meal-swatch { width:112px; height:112px; flex:none; border-radius:32px; }
+.meal-swatch.butter { background:linear-gradient(135deg,#f5ecd6,#e9d5aa); }
+.meal-swatch.leaf { background:linear-gradient(135deg,#d4e9a7,#9cc95d); }
+.meal-swatch.peach { background:linear-gradient(135deg,#f4c19f,#e78d67); }
+.meal-swatch.rose { background:linear-gradient(135deg,#efc7bd,#d9958d); }
+.option-copy { display:flex; flex:1; flex-direction:column; gap:8px; }
+.option-copy strong { font-size:clamp(23px,4vw,31px); font-weight:750; }
+.option-copy small { color:#898d82; font-size:clamp(16px,3vw,22px); }
+.option-check { display:grid; place-items:center; width:60px; height:60px; flex:none; border:4px solid #bfc2b8; border-radius:20px; color:#fff; font-size:32px; font-weight:800; }
+.meal-option.selected .option-check { border-color:#7eb438; background:#7eb438; color:#25341d; }
+.day-options { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.day-option { min-height:90px; border:2px solid #eeede7; border-radius:25px; background:#fff; color:#3b4036; font-size:24px; font-weight:700; cursor:pointer; }
+.day-option.selected { border-color:#7eb438; background:#f0f6e7; color:#527d27; }
+.diet-options { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.diet-option { position:relative; display:flex; min-height:180px; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:18px 10px; border:2px solid #efeee8; border-radius:30px; background:#fff; color:#282d23; text-align:center; cursor:pointer; }
+.diet-option.selected { border-color:#7eb438; background:#f1f7e9; }
+.diet-symbol { display:grid; place-items:center; width:58px; height:58px; margin-bottom:4px; border-radius:19px; background:#f7f6f1; color:#2e4425; font-size:29px; }
+.diet-option strong { font-size:clamp(17px,3vw,23px); font-weight:750; }
+.diet-option small { color:#8b8e83; font-size:15px; }
+.diet-check { position:absolute; top:12px; right:12px; display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:#7eb438; color:white; font-size:19px; }
+.allergy-content { gap:14px; }
+.allergy-content label { margin-top:12px; font-size:20px; font-weight:750; }
+.allergy-content label span { color:#999d94; font-size:14px; font-weight:400; }
+.allergy-content textarea { width:100%; min-height:100px; padding:18px; border:2px solid #eeede7; border-radius:22px; background:#fff; color:#2c3028; font:inherit; font-size:18px; resize:vertical; }
+.allergy-content textarea::placeholder { color:#b0b3ab; }
+.allergy-content p { color:#92968d; font-size:14px; }
+.minimal-error { margin-top:18px; color:#a24e40; font-size:15px; }
+.minimal-footer { position:fixed; z-index:20; right:0; bottom:0; left:0; display:flex; align-items:center; justify-content:center; padding:18px max(24px,calc((100vw - 760px)/2 + 24px)) calc(18px + env(safe-area-inset-bottom)); background:linear-gradient(180deg,rgba(255,255,255,0),#fff 25%); }
+.minimal-step-label { display:none; }
+.minimal-next { width:100%; max-width:760px; min-height:100px; border:0; border-radius:999px; background:#7eb438; color:white; font-size:clamp(24px,4vw,32px); font-weight:750; cursor:pointer; }
+.minimal-next:disabled { opacity:.65; }
+.minimal-setup.editing { max-width:760px; padding-top:20px; }
+.minimal-setup.editing .minimal-progress-head { margin-top:0; }
+@media(max-width:600px) {
+ .minimal-setup { padding:18px 22px 150px; }
+ .minimal-brand { margin:10px 0 36px; }
+ .minimal-progress-head { gap:18px; margin:12px 0 36px; }
+ .minimal-back { width:60px; height:60px; }
+ .minimal-heading { margin-bottom:28px; }
+ .minimal-heading h1 { font-size:clamp(35px,10vw,46px); }
+ .minimal-heading p { margin-top:24px; font-size:21px; line-height:1.5; }
+ .minimal-content { gap:17px; }
+ .people-card { min-height:130px; gap:14px; padding:17px 15px; border-radius:31px; }
+ .people-symbol { width:76px; height:76px; border-radius:25px; font-size:35px; }
+ .people-copy strong { font-size:25px; }
+ .people-copy span { font-size:17px; }
+ .count-button { width:58px; height:58px; font-size:32px; }
+ .count-value { min-width:18px; font-size:31px; }
+ .portion-total { min-height:100px; padding:20px 24px; border-radius:28px; font-size:21px; }
+ .portion-total strong { font-size:36px; }
+ .meal-options { gap:15px; }
+ .meal-option { min-height:122px; gap:17px; padding:15px 16px; border-width:2px; border-radius:31px; }
+ .meal-swatch { width:80px; height:80px; border-radius:26px; }
+ .option-copy strong { font-size:24px; }
+ .option-copy small { font-size:16px; }
+ .option-check { width:52px; height:52px; border-width:3px; border-radius:17px; }
+ .day-options { grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+ .day-option { min-height:78px; border-radius:22px; font-size:21px; }
+ .diet-options { gap:12px; }
+ .diet-option { min-height:155px; border-radius:26px; }
+ .diet-option strong { font-size:18px; }
+ .diet-option small { font-size:13px; }
+ .diet-symbol { width:49px; height:49px; font-size:25px; }
+ .minimal-footer { padding:16px 22px calc(18px + env(safe-area-inset-bottom)); }
+ .minimal-next { min-height:84px; font-size:27px; }
+}

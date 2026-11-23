@@ -1,110 +1,115 @@
 import {useState} from 'react';
 
+const MEALS=[
+ {name:'Breakfast',note:'quick + repeatable',tone:'butter'},
+ {name:'Lunch',note:'leftovers-friendly',tone:'leaf'},
+ {name:'Dinner',note:'the main event',tone:'peach'},
+ {name:'Snacks',note:'optional extras',tone:'rose'}
+];
+const DIETS=[
+ {name:'No restrictions',value:'No preference',note:'anything goes',symbol:'✳'},
+ {name:'Vegetarian',value:'Vegetarian',note:'no meat or fish',symbol:'♧'},
+ {name:'Vegan',value:'Vegan',note:'plants only',symbol:'❋'},
+ {name:'Pescatarian',value:'Pescatarian',note:'fish, no meat',symbol:'♧'},
+ {name:'Keto',value:'Keto',note:'low carb, high fat',symbol:'◒'},
+ {name:'High-protein',value:'High-protein',note:'protein-forward meals',symbol:'↗'},
+ {name:'Mediterranean',value:'Mediterranean',note:'veg, fish, olive oil',symbol:'✳'},
+ {name:'Anti-inflammatory',value:'Anti-inflammatory',note:'whole foods',symbol:'◉'}
+];
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const APPLIANCES=['Stovetop','Oven','Air fryer','Microwave','Rice cooker','Slow cooker','Blender','Refrigerator','Freezer'];
-const MEALS=['Breakfast','Lunch','Dinner','Snacks'];
-const DIETS=['No preference','Vegetarian','Pescatarian','Vegan','Omnivore'];
-const STEPS=[{name:'Household',eyebrow:'THE PEOPLE AT YOUR TABLE',title:'Who are we cooking for?'},{name:'Food',eyebrow:'WHAT WORKS FOR YOU',title:'Your food preferences.'},{name:'Routine',eyebrow:'YOUR WEEK, YOUR WAY',title:'When do you want to plan?'},{name:'Kitchen',eyebrow:'TOOLS & BUDGET',title:'What do you have to work with?'},{name:'Review',eyebrow:'ONE LAST LOOK',title:'Your kitchen, your rules.'}];
-const csv=v=>Array.isArray(v)?v.join(', '):(v||'');
-const list=v=>v.split(',').map(x=>x.trim()).filter(Boolean);
-const money=v=>Number(v||0).toLocaleString('en-PH');
+const STEPS=['People','Meals','Days','Food','Allergies'];
+const asList=v=>Array.isArray(v)?v.join(', '):(v||'');
+const parseList=v=>v.split(',').map(x=>x.trim()).filter(Boolean);
+
 export default function HouseholdSetup({settings,onSave,onComplete,editing=false}){
  const [step,setStep]=useState(0);
  const [form,setForm]=useState({
-  household_name:editing?(settings.household_name||''):'',
-  household_size:editing?(settings.household_size||''):'',
-  servings_per_meal:editing?(settings.servings_per_meal||''):'',
-  dietary_preference:editing?(settings.dietary_preference||''):'',
-  allergies:editing?csv(settings.allergies):'',
-  exclusions:editing?csv(settings.exclusions):'',
-  favorite_ingredients:editing?csv(settings.favorite_ingredients):'',
-  disliked_ingredients:editing?csv(settings.disliked_ingredients):'',
-  appliances:editing?(settings.appliances||[]):[],
-  planning_days:editing?(settings.planning_days||[]):[],
-  meal_types:editing?(settings.meal_types||[]):[],
-  planning_frequency:editing?(settings.planning_frequency||'Weekly'):'Weekly',
-  budget_ceiling:editing?(settings.budget_ceiling??''):''
+  adults:editing?(settings.adults_count??1):1,
+  kids:editing?(settings.kids_count??0):0,
+  meal_types:editing?(settings.meal_types||['Dinner']):['Dinner'],
+  planning_days:editing?(settings.planning_days||DAYS):[...DAYS],
+  dietary_preference:editing?(settings.dietary_preference||'No preference'):'No preference',
+  allergies:editing?asList(settings.allergies):'',
+  exclusions:editing?asList(settings.exclusions):'',
+  budget_ceiling:settings.budget_ceiling??1500,
+  planning_frequency:settings.planning_frequency||'Weekly'
  });
  const [saving,setSaving]=useState(false),[error,setError]=useState('');
  const update=(key,value)=>setForm(s=>({...s,[key]:value}));
  const toggle=(key,value)=>update(key,form[key].includes(value)?form[key].filter(x=>x!==value):[...form[key],value]);
+ const portions=Number(form.adults)+Number(form.kids)*0.5;
+ const householdSize=Number(form.adults)+Number(form.kids);
  const next=()=>{
   setError('');
-  if(step===0&&(!form.household_name.trim()||Number(form.household_size)<1||Number(form.servings_per_meal)<1)){setError('Add a household name, household size and serving size to continue.');return;}
-  if(step===1&&!form.dietary_preference){setError('Choose a dietary preference, or select “No preference”.');return;}
-  if(step===2&&(!form.planning_days.length||!form.meal_types.length)){setError('Choose at least one day and one meal type.');return;}
-  setStep(s=>Math.min(s+1,STEPS.length-1));
-  window.scrollTo({top:0,behavior:'smooth'});
+  if(step===0&&householdSize<1){setError('Add at least one person.');return;}
+  if(step===1&&!form.meal_types.length){setError('Choose at least one meal.');return;}
+  if(step===2&&!form.planning_days.length){setError('Choose at least one day.');return;}
+  setStep(s=>Math.min(s+1,STEPS.length-1));window.scrollTo({top:0,behavior:'smooth'});
  };
  const back=()=>{setError('');setStep(s=>Math.max(0,s-1));window.scrollTo({top:0,behavior:'smooth'});};
  const submit=async e=>{
   e.preventDefault();
-  if(step!==STEPS.length-1){next();return;}
+  if(step<STEPS.length-1){next();return;}
   setSaving(true);setError('');
   try{
-   await onSave({...form,household_name:form.household_name.trim(),household_size:Math.max(1,Number(form.household_size)||1),servings_per_meal:Math.max(1,Number(form.servings_per_meal)||1),budget_ceiling:Math.max(0,Number(form.budget_ceiling)||0),allergies:list(form.allergies),exclusions:list(form.exclusions),favorite_ingredients:list(form.favorite_ingredients),disliked_ingredients:list(form.disliked_ingredients),household_access:'local',grocery_pricing:'estimates',onboarding_completed:true});
+   await onSave({
+    ...settings,...form,
+    adults_count:Number(form.adults),kids_count:Number(form.kids),
+    household_size:householdSize,servings_per_meal:Math.max(1,Math.ceil(portions)),
+    allergies:parseList(form.allergies),exclusions:parseList(form.exclusions),
+    favorite_ingredients:settings.favorite_ingredients||[],disliked_ingredients:settings.disliked_ingredients||[],
+    appliances:settings.appliances||[],household_name:settings.household_name||'My household',
+    household_access:'local',grocery_pricing:'estimates',onboarding_completed:true
+   });
    onComplete?.();
-  }catch(err){setError(err.message||'Could not save your household settings.');}
+  }catch(err){setError(err.message||'Could not save your settings.');}
   finally{setSaving(false);}
  };
- const choices=(key,items)=><div className="choice-grid">{items.map(item=><label key={item} className={form[key].includes(item)?'choice selected':'choice'}><input type="checkbox" checked={form[key].includes(item)} onChange={()=>toggle(key,item)}/>{item}</label>)}</div>;
- const review=(label,value)=><div className="review-row"><span>{label}</span><strong>{value||'Not set'}</strong></div>;
- const current=STEPS[step];
- return <main className={editing?'setup-page setup-editing':'setup-page'}>
-  {!editing&&<div className="setup-topline"><span className="brand-mark">m.</span><span>THE HOUSEHOLD KITCHEN</span></div>}
-  <div className="setup-intro"><p className="eyebrow">{editing?'YOUR KITCHEN, YOUR SETTINGS':'A KITCHEN THAT FITS YOUR ACTUAL LIFE'}</p><h1>{editing?<>Household<br/><em>preferences.</em></>:<>Let's set up<br/><em>your kitchen.</em></>}</h1><p>{editing?'Update one part at a time. Your changes are saved on this device.':'A few quick steps to make the kitchen planner yours. Nothing is locked in, and you can change it all later.'}</p></div>
-  <div className="wizard-progress" aria-label={`Step ${step+1} of ${STEPS.length}`}>
-   <div className="wizard-progress-copy"><span>STEP 0{step+1} <i>OF 0{STEPS.length}</i></span><strong>{current.name}</strong></div>
-   <div className="wizard-track">{STEPS.map((s,i)=><span key={s.name} className={i<=step?'complete':''}/>)}</div>
-   <div className="wizard-stepnames">{STEPS.map((s,i)=><span key={s.name} className={i===step?'current':''}>{s.name}</span>)}</div>
+ const count=(label,key,portion)=> <div className="people-card">
+  <div className="people-symbol">♙</div><div className="people-copy"><strong>{label}</strong><span>{portion}</span></div>
+  <button type="button" className="count-button" aria-label={`Remove one ${label.toLowerCase()}`} disabled={Number(form[key])===0} onClick={()=>update(key,Math.max(0,Number(form[key])-1))}>−</button>
+  <strong className="count-value">{form[key]}</strong>
+  <button type="button" className="count-button add" aria-label={`Add one ${label.toLowerCase()}`} onClick={()=>update(key,Number(form[key])+1)}>+</button>
+ </div>;
+ const currentTitles=['Who’s eating?','Which meals?','Which days?','How do you eat?','Any allergies?'];
+ const subtitles=['Every meal scales to your household automatically.','Pick what we should plan for each week.','Choose the days you want meals planned.','Choose the food style that suits your household.','We’ll keep these ingredients out of your meal ideas.'];
+ return <main className={editing?'minimal-setup editing':'minimal-setup'}>
+  {!editing&&<div className="minimal-brand"><span className="minimal-mark">m.</span><span>THE HOUSEHOLD KITCHEN</span></div>}
+  <div className="minimal-progress-head">
+   {editing&&<span className="minimal-edit-label">HOUSEHOLD SETTINGS</span>}
+   <button type="button" className="minimal-back" onClick={step?back:()=>window.history.back()} aria-label="Go back">‹</button>
+   <div className="minimal-progress"><span style={{width:`${((step+1)/STEPS.length)*100}%`}}/></div>
   </div>
-  <form className="setup-form wizard-form" onSubmit={submit}>
-   <section className="setup-section wizard-panel" key={step}>
-    <span className="setup-step">0{step+1} / {current.eyebrow}</span>
-    <h2>{current.title}</h2>
-    {step===0&&<>
-     <label className="field">Household name<input value={form.household_name} onChange={e=>update('household_name',e.target.value)} placeholder="e.g. The Santos household" required/></label>
-     <div className="setup-two"><label className="field">People in household<input type="number" min="1" max="30" value={form.household_size} onChange={e=>update('household_size',e.target.value)} placeholder="How many?" required/></label><label className="field">Servings per recipe<input type="number" min="1" max="30" value={form.servings_per_meal} onChange={e=>update('servings_per_meal',e.target.value)} placeholder="How many plates?" required/></label></div>
-     <p className="setup-hint">Household size and servings can be different. Set the usual number of portions you want recipes to make.</p>
-    </>}
-    {step===1&&<>
-     <label className="field">Dietary preference<select value={form.dietary_preference} onChange={e=>update('dietary_preference',e.target.value)}><option value="">Choose a preference</option>{DIETS.map(v=><option key={v}>{v}</option>)}</select></label>
-     <label className="field">Allergies <small>Separate items with commas</small><input value={form.allergies} onChange={e=>update('allergies',e.target.value)} placeholder="e.g. peanuts, shrimp"/></label>
-     <label className="field">Ingredients to exclude<input value={form.exclusions} onChange={e=>update('exclusions',e.target.value)} placeholder="e.g. mushrooms, pork"/></label>
-     <label className="field">Ingredients you enjoy<input value={form.favorite_ingredients} onChange={e=>update('favorite_ingredients',e.target.value)} placeholder="e.g. tofu, salmon, tomatoes"/></label>
-     <label className="field">Ingredients you dislike<input value={form.disliked_ingredients} onChange={e=>update('disliked_ingredients',e.target.value)} placeholder="e.g. okra, olives"/></label>
-    </>}
-    {step===2&&<>
-     <p className="setup-hint">Choose the days and meal types you want to plan. No assumptions about work shifts or fixed meal times.</p>
-     <span className="field-label">Which days?</span>{choices('planning_days',DAYS)}
-     <span className="field-label">Which meals?</span>{choices('meal_types',MEALS)}
-     <label className="field">How often do you plan?<select value={form.planning_frequency} onChange={e=>update('planning_frequency',e.target.value)}>{['Daily','Twice a week','Weekly','Every two weeks'].map(v=><option key={v}>{v}</option>)}</select></label>
-    </>}
-    {step===3&&<>
-     <span className="field-label">Which appliances can you use?</span>{choices('appliances',APPLIANCES)}
-     <label className="field">Weekly grocery budget <span className="currency-input"><b>₱</b><input type="number" min="0" step="50" value={form.budget_ceiling} onChange={e=>update('budget_ceiling',e.target.value)} placeholder="Set a budget (optional)"/></span></label>
-     <p className="setup-hint">Prices are editable estimates in Philippine pesos. You can leave the budget blank and set it later.</p>
-    </>}
-    {step===4&&<div className="setup-review">
-     <p className="setup-hint">Here's what Midnight Munch will use. Go back to change anything before saving.</p>
-     {review('Household',form.household_name)}
-     {review('People / servings',`${form.household_size} people · ${form.servings_per_meal} servings`)}
-     {review('Diet',form.dietary_preference)}
-     {review('Allergies',form.allergies)}
-     {review('Avoid',form.exclusions)}
-     {review('Planning days',form.planning_days.join(', '))}
-     {review('Meal types',form.meal_types.join(', '))}
-     {review('Planning frequency',form.planning_frequency)}
-     {review('Appliances',form.appliances.join(', '))}
-     {review('Weekly budget',form.budget_ceiling? `₱${money(form.budget_ceiling)}`:'Not set')}
-     <div className="local-note"><strong>Saved on this device</strong><span>No account, cloud sync or cross-device sharing.</span></div>
-    </div>}
-   </section>
-   {error&&<p className="wizard-error" role="alert">{error}</p>}
-   <div className="wizard-actions">
-    {step>0?<button className="wizard-back" type="button" onClick={back}>← Back</button>:<span className="wizard-local-note">Your answers stay on this device.</span>}
-    {step<STEPS.length-1?<button className="setup-submit" type="button" onClick={next}>Continue <span>→</span></button>:<button className="setup-submit" type="submit" disabled={saving}>{saving?'Saving…':editing?'Save changes ↗':'Finish setup ↗'}</button>}
-   </div>
+  <form className="minimal-form" onSubmit={submit}>
+   <header className="minimal-heading"><h1>{editing?STEPS[step]==='People'?'Who’s eating?':currentTitles[step]:currentTitles[step]}</h1><p>{subtitles[step]}</p></header>
+   {step===0&&<section className="minimal-content">
+    {count('Adults','adults','full portions')}
+    {count('Kids','kids','half portions')}
+    <div className="portion-total"><span>Portions per meal</span><strong>{portions}</strong></div>
+   </section>}
+   {step===1&&<section className="minimal-content meal-options">
+    {MEALS.map(m=><button type="button" key={m.name} className={`meal-option ${form.meal_types.includes(m.name)?'selected':''}`} onClick={()=>toggle('meal_types',m.name)}>
+     <span className={`meal-swatch ${m.tone}`}/><span className="option-copy"><strong>{m.name}</strong><small>{m.note}</small></span><span className="option-check">{form.meal_types.includes(m.name)?'✓':''}</span>
+    </button>)}
+   </section>}
+   {step===2&&<section className="minimal-content day-options">
+    {DAYS.map(day=><button type="button" key={day} className={form.planning_days.includes(day)?'day-option selected':'day-option'} onClick={()=>toggle('planning_days',day)}>{day}</button>)}
+   </section>}
+   {step===3&&<section className="minimal-content diet-options">
+    {DIETS.map(d=><button type="button" key={d.value} className={form.dietary_preference===d.value?'diet-option selected':'diet-option'} onClick={()=>update('dietary_preference',d.value)}>
+     <span className="diet-symbol">{d.symbol}</span><strong>{d.name}</strong><small>{d.note}</small>{form.dietary_preference===d.value&&<span className="diet-check">✓</span>}
+    </button>)}
+   </section>}
+   {step===4&&<section className="minimal-content allergy-content">
+    <label htmlFor="allergies">Allergies</label><textarea id="allergies" value={form.allergies} onChange={e=>update('allergies',e.target.value)} placeholder="e.g. peanuts, shrimp"/>
+    <label htmlFor="exclusions">Other ingredients to avoid <span>Optional</span></label><textarea id="exclusions" value={form.exclusions} onChange={e=>update('exclusions',e.target.value)} placeholder="e.g. mushrooms, olives"/>
+    <p>You can update these anytime in household settings.</p>
+   </section>}
+   {error&&<p className="minimal-error" role="alert">{error}</p>}
+   <footer className="minimal-footer">
+    <div className="minimal-step-label">{step+1} / {STEPS.length}</div>
+    <button className="minimal-next" type="submit" disabled={saving}>{step===STEPS.length-1?(saving?'Saving…':editing?'Save':'Finish'):'Next'}</button>
+   </footer>
   </form>
  </main>;
 }
