@@ -1,7 +1,18 @@
 export const C = {
-  paper: "#F8F5EE", canvas: "#F1EDE4", card: "#FFFDFA", ink: "#292A25",
-  muted: "#858477", line: "#E6E0D5", sage: "#778873", sageLight: "#E5EADF",
-  terra: "#C47E69", terraLight: "#F2E5DF", butter: "#E9D9AE", dark: "#252821",
+  paper: "#F6F2E9",
+  canvas: "#EEE9DE",
+  card: "#FFFEFA",
+  ink: "#26372F",
+  muted: "#7B8074",
+  line: "#E7E1D5",
+  sage: "#71836A",
+  sageDeep: "#425B49",
+  sageLight: "#E7EDE2",
+  terra: "#C77E67",
+  terraLight: "#F3E5DE",
+  butter: "#E9D9B4",
+  dark: "#26372F",
+  cream: "#F6F2E9",
 };
 export const serif = "Georgia";
 export const money = (n:number) => "₱" + Number(n || 0).toLocaleString("en-PH",{maximumFractionDigits:0});
