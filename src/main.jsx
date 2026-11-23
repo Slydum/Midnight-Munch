@@ -6,6 +6,7 @@ import { HashRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { applyTheme, getSavedTheme } from './styles/theme.js';
 import './styles/global.css';
+import './styles/editorial.css';
 
 applyTheme(getSavedTheme());
 
