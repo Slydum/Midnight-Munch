@@ -12,19 +12,18 @@ import { isRemote } from './lib/supabase.js';
 import { useOnline } from './lib/useData.js';
 
 const NAV = [
-  { to: '/', label: 'Home', icon: '🏠', end: true },
-  { to: '/plan', label: 'Plan', icon: '🍽️' },
-  { to: '/cook', label: 'Cook', icon: '👩‍🍳' },
-  { to: '/groceries', label: 'Market', icon: '🧺' },
-  { to: '/library', label: 'Library', icon: '📖' },
-  { to: '/fridge', label: 'Fridge', icon: '📷' },
-  { to: '/history', label: 'History', icon: '🕘' },
+  { to: '/', label: 'Today', icon: '◷', end: true },
+  { to: '/plan', label: 'Meal plan', icon: '▦' },
+  { to: '/cook', label: 'Cooking', icon: '♨' },
+  { to: '/groceries', label: 'Market list', icon: '⌑' },
+  { to: '/library', label: 'Recipes', icon: '▤' },
+  { to: '/fridge', label: 'Pantry', icon: '◫' },
+  { to: '/history', label: 'History', icon: '↺' },
 ];
 
 export default function App() {
   const [theme, setTheme] = useState(getSavedTheme());
   const online = useOnline();
-
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     applyTheme(next);
@@ -32,53 +31,43 @@ export default function App() {
   };
 
   return (
-    <>
-      <nav className="topbar">
-        <div className="topbar-inner">
-          <span className="nav-brand">🌙 Midnight Munch</span>
-          {NAV.map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-              {n.label}
-            </NavLink>
-          ))}
-          <span className="nav-spacer" />
-          <button className="theme-toggle" onClick={toggleTheme} title="Toggle light/dark mode">
-            {theme === 'dark' ? '☀️' : '🌘'}
-          </button>
+    <div className="app-shell">
+      <header className="app-header">
+        <NavLink to="/" className="brand-lockup" aria-label="Midnight Munch home">
+          <span className="brand-mark">m.</span>
+          <span className="brand-copy"><strong>midnight munch</strong><small>THE HOUSEHOLD KITCHEN</small></span>
+        </NavLink>
+        <div className="header-right">
+          <span className={online ? 'connection-state' : 'connection-state offline'}><i />{online ? 'All changes saved' : 'Offline mode'}</span>
+          <button className="theme-toggle" onClick={toggleTheme} title="Toggle light/dark mode" aria-label="Toggle theme">{theme === 'dark' ? '☼' : '◐'}</button>
         </div>
+      </header>
+
+      <div className="app-body">
+        <aside className="side-rail">
+          <span className="rail-label">YOUR KITCHEN</span>
+          {NAV.map((n) => <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `rail-link${isActive ? ' active' : ''}`}><span className="rail-icon">{n.icon}</span><span>{n.label}</span></NavLink>)}
+          <div className="rail-foot"><span className="rail-label">HOUSEHOLD SPACE</span><p>Made for everyday meals, shared lists and calmer evenings.</p></div>
+        </aside>
+
+        <main className="main-content">
+          {!online && <div className="status-banner">You're offline. Changes are saved on this device and will sync when you're back online.</div>}
+          {!isRemote && <div className="status-banner demo">You're in local mode. Connect Supabase to share updates between devices.</div>}
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/plan" element={<PlanPage />} />
+            <Route path="/cook" element={<CookingBuddyPage />} />
+            <Route path="/groceries" element={<GroceriesPage />} />
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/fridge" element={<FridgePage />} />
+            <Route path="/history" element={<HistoryPage />} />
+          </Routes>
+        </main>
+      </div>
+
+      <nav className="mobile-nav" aria-label="Main navigation">
+        {NAV.slice(0,5).map((n) => <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => isActive ? 'active' : ''}><span>{n.icon}</span><small>{n.label === 'Meal plan' ? 'Plan' : n.label === 'Market list' ? 'Market' : n.label}</small></NavLink>)}
       </nav>
-
-      {!online && (
-        <div className="offline-banner">
-          Offline — changes are saved on this device and will sync when signal returns.
-        </div>
-      )}
-      {!isRemote && (
-        <div className="notice-banner">
-          Demo mode — data stays on this device until Supabase is connected (see README).
-        </div>
-      )}
-
-      <main className="container">
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/plan" element={<PlanPage />} />
-          <Route path="/cook" element={<CookingBuddyPage />} />
-          <Route path="/groceries" element={<GroceriesPage />} />
-          <Route path="/library" element={<LibraryPage />} />
-          <Route path="/fridge" element={<FridgePage />} />
-          <Route path="/history" element={<HistoryPage />} />
-        </Routes>
-      </main>
-
-      <nav className="tabbar">
-        {NAV.map((n) => (
-          <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>
-            <span className="tab-icon">{n.icon}</span>
-            {n.label}
-          </NavLink>
-        ))}
-      </nav>
-    </>
+    </div>
   );
 }
