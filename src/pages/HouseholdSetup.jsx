@@ -24,11 +24,11 @@ const parseList=v=>v.split(',').map(x=>x.trim()).filter(Boolean);
 export default function HouseholdSetup({settings,onSave,onComplete,editing=false}){
  const [step,setStep]=useState(0);
  const [form,setForm]=useState({
-  adults:editing?(settings.adults_count??1):1,
+  adults:editing?(settings.adults_count??0):0,
   kids:editing?(settings.kids_count??0):0,
-  meal_types:editing?(settings.meal_types||['Dinner']):['Dinner'],
-  planning_days:editing?(settings.planning_days||DAYS):[...DAYS],
-  dietary_preference:editing?(settings.dietary_preference||'No preference'):'No preference',
+  meal_types:editing?(settings.meal_types||[]):[],
+  planning_days:editing?(settings.planning_days||[]):[],
+  dietary_preference:editing?(settings.dietary_preference||''):'',
   allergies:editing?asList(settings.allergies):'',
   exclusions:editing?asList(settings.exclusions):'',
   budget_ceiling:settings.budget_ceiling??1500,
@@ -44,6 +44,7 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
   if(step===0&&householdSize<1){setError('Add at least one person.');return;}
   if(step===1&&!form.meal_types.length){setError('Choose at least one meal.');return;}
   if(step===2&&!form.planning_days.length){setError('Choose at least one day.');return;}
+  if(step===3&&!form.dietary_preference){setError('Choose a food preference to continue.');return;}
   setStep(s=>Math.min(s+1,STEPS.length-1));window.scrollTo({top:0,behavior:'smooth'});
  };
  const back=()=>{setError('');setStep(s=>Math.max(0,s-1));window.scrollTo({top:0,behavior:'smooth'});};
