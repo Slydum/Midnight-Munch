@@ -6,12 +6,22 @@ Midnight Munch is a web app, not a native iOS or Android app. It runs in Safari,
 
 ## Features
 
+- First-run household setup with editable food, routine, appliance and budget preferences.
+- Flexible planning preferences: choose days and meal types without a hardcoded work schedule.
 - Weekly meal planning and meal generation.
 - Consolidated grocery / market list.
 - Recipe library and guided Cooking Buddy.
 - Household budget tracking and nutrition flags.
 - Leftovers, fridge inventory, and meal history.
-- Local-device demo mode, with optional Supabase sync between devices.
+- Local-first storage with JSON backup and restore.
+
+## Your data
+
+Midnight Munch stores household data in this browser on this device. It does not require an account, cloud service, or internet connection for local data access. Data is not automatically synced to another device.
+
+Use **Household settings → Export backup** regularly. Browser resets, clearing website data, or losing the device can erase local data. Restore a backup from the same settings page.
+
+Grocery budgets and recipe costs are estimates in Philippine pesos (₱) unless updated with actual amounts.
 
 ## Install on a phone
 
@@ -28,20 +38,8 @@ npm install
 npm run dev
 ```
 
-Create a production build with:
-
-```bash
-npm run build
-```
+Create a production build with `npm run build`.
 
 ## Deploy
 
 The `.github/workflows/deploy.yml` workflow builds the Vite app and deploys it to GitHub Pages whenever changes are pushed to `main`.
-
-For shared household sync, create a dedicated Supabase project, run `supabase/schema.sql`, and add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as GitHub Actions repository secrets.
-
-Without Supabase credentials, the app uses local device storage. The shared-link access model does not provide user accounts, so do not store sensitive personal information.
-
-## Optional integrations
-
-Recipe search can use TheMealDB by default, with optional Google Custom Search credentials. Fridge photo recognition can be enabled with a Clarifai token.
