@@ -1,47 +1,47 @@
 # 🌙 Midnight Munch
 
-A shared household meal planner and cooking companion for two people working around night-shift schedules.
+A mobile-first Progressive Web App (PWA) for household meal planning and cooking.
 
-The app supports meal planning, a consolidated market list, a meal library, budget tracking, nutrition flags, leftovers, fridge inventory, history, and a guided Cooking Buddy.
+Midnight Munch is a web app, not a native iOS or Android app. It runs in Safari, Chrome, and other modern browsers, and can be added to a phone's home screen.
 
-## Cooking Buddy
+## Features
 
-- 14 guided Filipino household dinner recipes.
-- Ingredient checklist with serving-size scaling.
-- Step-by-step cooking instructions.
-- Individual countdown timers, pause/resume, reset, and +1 minute.
-- Timer completion vibration and optional browser notification (when permission is already granted).
-- Screen wake lock where the browser supports it.
-- Shared active recipe, step, ingredient checklist, and timer state when Supabase is connected.
+- Weekly meal planning and meal generation.
+- Consolidated grocery / market list.
+- Recipe library and guided Cooking Buddy.
+- Household budget tracking and nutrition flags.
+- Leftovers, fridge inventory, and meal history.
+- Local-device demo mode, with optional Supabase sync between devices.
 
-## PWA
+## Install on a phone
 
-The app includes a web app manifest, service worker, offline app-shell caching, and mobile home-screen metadata. On iPhone, open the deployed site in Safari, tap Share, then Add to Home Screen. On Android, use the browser's Install app option.
+**iPhone:** Open the deployed site in Safari, tap Share, then choose **Add to Home Screen**.
 
-## Development
+**Android:** Open the site in Chrome and choose **Install app** or **Add to Home screen**.
+
+The PWA uses a web app manifest and service worker for its installable app experience and offline app-shell caching.
+
+## Develop
 
 ```bash
 npm install
 npm run dev
 ```
 
-Without Supabase credentials, the app uses local device storage for demo mode. For two-device live sync, configure a dedicated Supabase project.
+Create a production build with:
 
-## Shared Supabase setup
+```bash
+npm run build
+```
 
-1. Create a dedicated Supabase project for Midnight Munch. Do not reuse a database that contains unrelated application data.
-2. Run `supabase/schema.sql` in the new project's SQL Editor.
-3. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as GitHub Actions repository secrets.
-4. Push to `main`; GitHub Actions builds and deploys to GitHub Pages.
-5. Share the deployed URL with your household.
+## Deploy
 
-**Access note:** This version uses a shared-link access model without accounts. Anyone who obtains the app URL can read and edit its shared data. Do not store sensitive personal information in it.
+The `.github/workflows/deploy.yml` workflow builds the Vite app and deploys it to GitHub Pages whenever changes are pushed to `main`.
+
+For shared household sync, create a dedicated Supabase project, run `supabase/schema.sql`, and add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as GitHub Actions repository secrets.
+
+Without Supabase credentials, the app uses local device storage. The shared-link access model does not provide user accounts, so do not store sensitive personal information.
 
 ## Optional integrations
 
 Recipe search can use TheMealDB by default, with optional Google Custom Search credentials. Fridge photo recognition can be enabled with a Clarifai token.
-
-
-## Native app 2.0
-
-The Expo / React Native iOS and Android app is being developed in parallel under [`native/`](./native/README.md). It preserves the existing PWA while migrating the household meal planner, grocery list, recipe shelf, cooking companion, pantry, and history to native screens.
