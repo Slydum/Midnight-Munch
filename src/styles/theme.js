@@ -1,14 +1,14 @@
 // Midnight Munch — warm modern kitchen palette.
 export const palette = {
-  oat: '#F5F1E8',
-  paper: '#FFFDFA',
-  ink: '#34352F',
-  muted: '#77786D',
-  sage: '#788A72',
-  sageDeep: '#5F735C',
-  terracotta: '#C88772',
+  oat: '#F3F0E8',
+  paper: '#FFFEFA',
+  ink: '#26382F',
+  muted: '#788078',
+  sage: '#405B49',
+  sageDeep: '#405B49',
+  terracotta: '#C47E68',
   rose: '#D9AAA0',
-  line: '#E7E0D5',
+  line: '#E2DFD4',
 };
 
 export const themes = {
