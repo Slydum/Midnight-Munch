@@ -137,15 +137,18 @@ export function generateWeekPlan(opts) {
     leftovers = [],
     existingPlan = null,
     onlyDate = null,
+    planningDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    mealTypes = SLOTS,
   } = opts;
 
   const mealsById = Object.fromEntries(meals.map((m) => [m.id, m]));
-  const dates = weekDates(weekStartIso);
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dates = weekDates(weekStartIso).filter((date) => planningDays.includes(dayNames[new Date(date + 'T00:00:00').getDay()]));
   const recent = recentMealIds(pastPlans, weekStartIso, cooldownDays);
 
   const slots = {};
   for (const date of dates) {
-    slots[date] = { pre: null, mid: null, post: null };
+    slots[date] = Object.fromEntries(mealTypes.map((slot) => [slot, null]));
     const prev = existingPlan?.slots?.[date];
     if (prev) {
       for (const s of SLOTS) {
@@ -189,18 +192,18 @@ export function generateWeekPlan(opts) {
   // Budget reservation: cheapest eligible meal cost per slot type, so early
   // picks can't spend money that later slots will inevitably need.
   const cheapestBySlot = {};
-  for (const slot of SLOTS) {
+  for (const slot of mealTypes) {
     const costs = meals.filter((m) => slotEligible(m, slot)).map((m) => Number(m.cost || 0));
     cheapestBySlot[slot] = costs.length ? Math.min(...costs) : 0;
   }
-  const remainingBySlot = Object.fromEntries(SLOTS.map((slot) => [slot, 0]));
+  const remainingBySlot = Object.fromEntries(mealTypes.map((slot) => [slot, 0]));
   for (const date of dates) {
-    for (const slot of SLOTS) {
+    for (const slot of mealTypes) {
       if (!slots[date][slot]) remainingBySlot[slot]++;
     }
   }
   const reserveForOthers = () =>
-    SLOTS.reduce((sum, s) => sum + remainingBySlot[s] * cheapestBySlot[s], 0);
+    mealTypes.reduce((sum, s) => sum + remainingBySlot[s] * cheapestBySlot[s], 0);
 
   for (const date of dates) {
     for (const slot of SLOTS) {
