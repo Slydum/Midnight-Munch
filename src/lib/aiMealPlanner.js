@@ -5,7 +5,10 @@ export async function requestAiMealPlan(settings, dates) {
   try {
     response = await fetch(`${API_URL}/generate-meals`, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+    mode: 'cors',
+    credentials: 'omit',
+    cache: 'no-store',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
       household_name: settings.household_name,
       servings_per_meal: settings.servings_per_meal,
