@@ -27,6 +27,7 @@ export default function PlanPage(){
    result.meals.forEach((recipe,index)=>{if(slots[recipe.date]&&mealTypes.includes(recipe.meal_type))slots[recipe.date][recipe.meal_type]={meal_id:records[index].id,locked:false,leftover:false};});
    const missing=dates.flatMap(date=>mealTypes.filter(type=>!slots[date][type]?.meal_id));
    if(missing.length)throw new Error('The recipe service left '+missing.length+' selected meal slot(s) empty. Your saved recipes were left untouched. Try again.');
+   localStorage.setItem('mm-seeded','1');
    await Promise.all(meals.map(meal=>db.remove('meals',meal.id)));
    await Promise.all(records.map(record=>db.upsert('meals',record)));
    await savePlan({week_start:weekStart,slots,budget_ceiling:Number(settings.budget_ceiling||0),generation_summary:result.summary||'',generated_by:'gemini',generated_at:new Date().toISOString()});
