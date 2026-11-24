@@ -62,30 +62,13 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
    allergies:parseList(form.allergies),exclusions:parseList(form.exclusions),
    favorite_ingredients:settings.favorite_ingredients||[],disliked_ingredients:settings.disliked_ingredients||[],
    appliances:settings.appliances||[],household_name:settings.household_name||'My household',
-   household_access:'local',grocery_pricing:'estimates',onboarding_completed:false
+   household_access:'local',grocery_pricing:'estimates',onboarding_completed:true
   };
   try{
-   if(editing){await onSave({...profile,onboarding_completed:true});onComplete?.();return;}
    await onSave(profile);
-   const start=weekStartOf(new Date());
-   const weekStart=isoDate(start);
-   const dayIndex={Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6};
-   const dates=form.planning_days.map(day=>{const d=new Date(start);d.setDate(d.getDate()+dayIndex[day]);return isoDate(d);});
-   const result=await requestAiMealPlan(profile,dates);
-   const records=await Promise.all(result.meals.map(async recipe=>toMealRecord(recipe,await findMealImage(recipe.name))));
-   const slots={};
-   dates.forEach(date=>{slots[date]={};form.meal_types.forEach(type=>{slots[date][type]=null;});});
-   result.meals.forEach((recipe,index)=>{
-    const record=records[index],date=recipe.date,type=recipe.meal_type;
-    if(!slots[date]||!form.meal_types.includes(type))return;
-    slots[date][type]={meal_id:record.id,locked:false,leftover:false};
-   });
-   await Promise.all(records.map(record=>db.upsert('meals',record)));
-   await db.upsert('week_plans',{week_start:weekStart,slots,budget_ceiling:Number(form.budget_ceiling),generation_summary:result.summary||'',generated_by:'gemini',generated_at:new Date().toISOString()});
-   await onSave({...profile,onboarding_completed:true});
    onComplete?.();
   }catch(err){
-   setGenerationError(err.message||'Could not generate your meals. Check your connection and try again.');
+   setError(err.message||'Could not save your household settings. Please try again.');
   }finally{setSaving(false);}
  };
  const submit=async e=>{
@@ -141,7 +124,6 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
     <p>This is the estimated total for all selected meals and days. You can change it anytime.</p>
    </section>}
    {error&&<p className="minimal-error" role="alert">{error}</p>}
-   {generationError&&<div className="generation-error" role="alert"><strong>Your selections are saved, but meal generation failed.</strong><p>{generationError}</p><button type="button" className="minimal-next" onClick={finishSetup}>Try generating again</button></div>}
    <footer className="minimal-footer">
     <div className="minimal-step-label">{step+1} / {STEPS.length}</div>
     <button className="minimal-next" type="submit" disabled={saving}>{step===STEPS.length-1?(saving?'Saving…':editing?'Save':'Finish'):'Next'}</button>
