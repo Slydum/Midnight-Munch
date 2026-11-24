@@ -6,9 +6,9 @@ const ALLOWED_ORIGINS = new Set([
 
 function corsHeaders(origin) {
   return {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://slydum.github.io",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Accept",
     "Vary": "Origin",
   };
 }
@@ -151,6 +151,7 @@ Rules:
 - Household preferences: ${JSON.stringify(preferences)}.
 - Output valid JSON only, no markdown fences.`;
 
+    console.info("Meal generation input validated", { dates: dates.length, mealTypes: input.mealTypes.length, portions: input.portions, budget: input.budget });
     let response;
     try {
       const result = await callGemini(env, {
