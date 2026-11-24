@@ -114,20 +114,29 @@ Rules:
 - Household preferences: ${JSON.stringify(preferences)}.
 - Output valid JSON only, no markdown fences.`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+    let response;
+    try {
+      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-goog-api-key": env.GEMINI_API_KEY },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: "application/json", temperature: 0.7, maxOutputTokens: 16000 },
       }),
-    });
+      });
+    } catch (error) {
+      console.error("Gemini network request failed", error?.message || error);
+      return json({ error: "Cloudflare could not reach Gemini. Please retry in a moment." }, 502, origin);
+    }
     if (!response.ok) {
       const details = await response.text();
       console.error("Gemini request failed", response.status, details.slice(0, 1200));
       return json({ error: response.status === 429 ? "Gemini's free usage limit has been reached. Please wait and try again." : "Gemini couldn't generate the plan. Please try again in a moment.", upstreamStatus: response.status }, response.status === 429 ? 429 : 502, origin);
     }
-    const result = await response.json();
+    let result;
+    try { result = await response.json(); } catch {
+      return json({ error: "Gemini returned an unreadable response. Please try again." }, 502, origin);
+    }
     const text = result.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("") || "";
     let generated;
     try { generated = JSON.parse(text); } catch {
