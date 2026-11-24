@@ -47,7 +47,7 @@ export async function findMealImage(recipeName) {
     if (!response.ok) throw new Error(`Photo search failed (${response.status})`);
     const payload = await response.json();
     const meals = Array.isArray(payload.meals) ? payload.meals : [];
-    const target = String(recipeName).toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\\s+/).filter(w => w.length > 2);
+    const target = String(recipeName).toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 2);
     const ranked = meals.map(meal => {
       const candidate = String(meal.strMeal || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
       const hits = target.filter(word => candidate.includes(word)).length;
