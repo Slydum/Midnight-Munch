@@ -17,6 +17,7 @@ export default function MealSlotCard({ slotData, meal, onSwap, onToggleLock, onM
 
   return (
     <div key={swapKey} className={`meal-card meal-swap-in${locked ? ' locked' : ''}`}>
+      {meal.image_url && <div className="meal-photo-wrap"><img className="meal-photo" src={meal.image_url} alt={meal.name} loading="lazy" /><span className="meal-photo-credit">Photo reference · TheMealDB</span></div>}
       {slotData.leftover && <div className="leftover-tag">♻ leftover · already made</div>}
       <div className="meal-name">
         {meal.plant_based && <span title="Plant-based — a gentle nod to your why">🌱 </span>}
