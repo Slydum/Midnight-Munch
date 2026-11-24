@@ -12,11 +12,12 @@
 //   * available leftovers are suggested before brand-new meals (cost 0)
 //   * locked slots are never touched on regeneration
 
-export const SLOTS = ['pre', 'mid', 'post'];
+export const SLOTS = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 export const SLOT_LABELS = {
-  pre: 'Pre-shift · dinner (before 8PM)',
-  mid: 'Mid-shift · midnight (no-cook)',
-  post: 'Post-shift · light (~6AM)',
+  Breakfast: 'Breakfast',
+  Lunch: 'Lunch',
+  Dinner: 'Dinner',
+  Snacks: 'Snacks',
 };
 export const NUTRITION_TAGS = ['protein', 'B12', 'iron', 'omega-3'];
 // A tag is "on track" when at least this share of the week's meals carry it.
@@ -45,9 +46,12 @@ export function weekDates(weekStartIso) {
 }
 
 function slotEligible(meal, slot) {
-  if (!(meal.time_slots || []).includes(slot)) return false;
-  if (slot === 'mid' && meal.prep_effort !== 'no-cook') return false;
-  return true;
+  if (Array.isArray(meal.meal_types) && meal.meal_types.includes(slot)) return true;
+  const legacy = meal.time_slots || [];
+  if (slot === 'Dinner' && legacy.includes('pre')) return true;
+  if (slot === 'Breakfast' && legacy.includes('post')) return true;
+  if ((slot === 'Lunch' || slot === 'Snacks') && legacy.includes('mid')) return true;
+  return false;
 }
 
 // meal ids used within `cooldownDays` before `weekStartIso`, from past plans.
@@ -189,7 +193,7 @@ export function generateWeekPlan(opts) {
     const costs = meals.filter((m) => slotEligible(m, slot)).map((m) => Number(m.cost || 0));
     cheapestBySlot[slot] = costs.length ? Math.min(...costs) : 0;
   }
-  const remainingBySlot = { pre: 0, mid: 0, post: 0 };
+  const remainingBySlot = Object.fromEntries(SLOTS.map((slot) => [slot, 0]));
   for (const date of dates) {
     for (const slot of SLOTS) {
       if (!slots[date][slot]) remainingBySlot[slot]++;
