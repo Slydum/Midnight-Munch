@@ -137,7 +137,7 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
    </section>}
    {step===5&&<section className="minimal-content budget-content">
     <label htmlFor="weekly-budget">Weekly grocery budget</label>
-    <div className="budget-input-wrap"><span>₱</span><input id="weekly-budget" type="number" min="1" step="50" inputMode="numeric" value={form.budget_ceiling} onChange={e=>update('budget_ceiling',e.target.value)} placeholder="e.g. 2500"/></div>
+    <div className="budget-input-wrap"><span>₱</span><input id="weekly-budget" type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" value={form.budget_ceiling} onChange={e=>update("budget_ceiling",e.target.value.replace(/[^0-9]/g,""))} placeholder="e.g. 2500"/></div>
     <p>This is the estimated total for all selected meals and days. You can change it anytime.</p>
    </section>}
    {error&&<p className="minimal-error" role="alert">{error}</p>}
