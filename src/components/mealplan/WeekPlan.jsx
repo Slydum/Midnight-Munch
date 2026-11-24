@@ -24,7 +24,10 @@ export default function WeekPlan({
   const [saveName, setSaveName] = useState(null); // null = closed, '' = open
   const [showApply, setShowApply] = useState(false);
 
-  const dates = weekDates(weekStart);
+  const selectedDays = settings.planning_days || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const activeSlots = settings.meal_types?.length ? settings.meal_types : SLOTS;
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dates = weekDates(weekStart).filter((date) => selectedDays.includes(dayNames[new Date(date + 'T00:00:00').getDay()]));
 
   const generate = (existingPlan = null, onlyDate = null) => {
     const next = generateWeekPlan({
@@ -36,6 +39,8 @@ export default function WeekPlan({
       leftovers,
       existingPlan,
       onlyDate,
+      planningDays: selectedDays,
+      mealTypes: activeSlots,
     });
     onSavePlan(next);
     setSwapTick((t) => t + 1);
@@ -103,7 +108,7 @@ export default function WeekPlan({
             <button className="btn btn-ghost btn-sm" onClick={() => generate(plan, date)} style={{ marginBottom: 4 }}>
               ↻ Regenerate day
             </button>
-            {SLOTS.map((slot) => {
+            {activeSlots.map((slot) => {
               const slotData = plan.slots?.[date]?.[slot];
               return (
                 <div key={slot}>
