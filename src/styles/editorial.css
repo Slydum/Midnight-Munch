@@ -514,3 +514,16 @@ button,input,select,textarea { font-family:var(--mm-font-ui); }
 .meal-photo-wrap { position:relative; margin:-2px -2px 12px; overflow:hidden; border-radius:13px; background:#eee9df; }
 .meal-photo { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; }
 .meal-photo-credit { position:absolute; right:8px; bottom:7px; padding:3px 6px; border-radius:5px; background:rgba(25,30,24,.62); color:#fff; font-size:9px; letter-spacing:.02em; }
+
+/* High-contrast action controls and fresh-recipe workflow. */
+.btn { color:var(--color-primary-contrast); }
+.btn-cta { color:#fff; }
+.btn-ghost { background:transparent; color:var(--color-text); border:1px solid var(--color-border); }
+.fresh-recipes-panel { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin:0 0 18px; padding:16px; border:1px solid var(--color-border); border-radius:16px; background:var(--color-surface); }
+.fresh-recipes-panel>div { flex:1 1 220px; }
+.fresh-recipes-panel strong { display:block; color:var(--color-text); font-size:15px; }
+.fresh-recipes-panel p { margin-top:4px; color:var(--color-text-muted); font-size:12px; line-height:1.45; }
+.fresh-recipes-button { flex:0 0 auto; min-height:42px; color:var(--color-primary-contrast)!important; }
+.fresh-recipes-panel .fresh-recipes-success,.fresh-recipes-panel .fresh-recipes-error { flex:1 0 100%; margin:0; font-size:12px; }
+.fresh-recipes-success { color:#3f704b!important; }
+.fresh-recipes-error { color:#a34f42!important; }
