@@ -5,7 +5,7 @@ export async function requestAiMealPlan(settings, dates) {
   try {
     response = await fetch(`${API_URL}/generate-meals`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
     body: JSON.stringify({
       household_name: settings.household_name,
       servings_per_meal: settings.servings_per_meal,
