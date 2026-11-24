@@ -107,7 +107,7 @@ export default function WeekPlan({
       <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))' }}>
         {dates.map((date, i) => (
           <div className="card plan-day" key={date}>
-            <div className="card-title">{DAY_NAMES[i]} <span className="muted">{date.slice(5)}</span></div>
+            <div className="card-title">{new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long' })} <span className="muted">{date.slice(5)}</span></div>
             <button className="btn btn-ghost btn-sm" onClick={() => onRegenerateDay ? onRegenerateDay(date) : generate(plan, date)} disabled={!!busyDay} style={{ marginBottom: 4 }}>
               {busyDay === date ? 'Finding new meals…' : '↻ Regenerate this day'}
             </button>
