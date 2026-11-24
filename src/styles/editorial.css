@@ -485,3 +485,26 @@ button,input,select,textarea { font-family:var(--mm-font-ui); }
   .main-content h3 { font-size:17px; }
   .main-content p { font-size:13px; }
 }
+
+
+/* AI meal-generation interstitial and budget step */
+.budget-content { gap:10px; max-width:460px; }
+.budget-content label { font-size:15px; font-weight:650; }
+.budget-content p { color:var(--color-text-muted); font-size:13px; line-height:1.5; }
+.budget-input-wrap { display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid var(--color-border); border-radius:16px; background:var(--color-surface); }
+.budget-input-wrap>span { color:var(--color-primary); font-family:Georgia,serif; font-size:25px; }
+.budget-input-wrap input { border:0; outline:0; box-shadow:none; font-size:24px; font-weight:650; padding:4px 0; background:transparent; }
+.generation-screen { min-height:68vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:34px 20px; }
+.generation-orbit { width:76px; height:76px; display:grid; place-items:center; border:1px solid var(--color-border); border-radius:25px 25px 25px 8px; background:#e7ebe2; color:#405b49; margin-bottom:24px; animation:generation-breathe 1.8s ease-in-out infinite; }
+.generation-orbit span { font-family:Georgia,serif; font-size:39px; font-weight:700; }
+.generation-screen h1 { margin-top:10px; font-family:Georgia,serif; font-size:clamp(27px,5vw,36px); font-weight:500; letter-spacing:-.04em; }
+.generation-screen>p:not(.eyebrow) { max-width:330px; margin-top:10px; color:var(--color-text-muted); font-size:14px; line-height:1.6; }
+.generation-dots { color:#83a17a; animation:generation-blink 1s steps(2,end) infinite; }
+.generation-progress { width:min(280px,80%); height:5px; margin-top:26px; overflow:hidden; border-radius:99px; background:var(--color-surface-alt); }
+.generation-progress span { display:block; width:38%; height:100%; border-radius:inherit; background:#83a17a; animation:generation-slide 1.7s ease-in-out infinite; }
+.generation-screen small { margin-top:12px; color:var(--color-text-muted); font-size:11px; }
+.generation-error { margin-top:16px; padding:16px; border:1px solid var(--color-border); border-radius:16px; background:var(--color-surface); }
+.generation-error p { margin:8px 0 14px; color:var(--color-text-muted); font-size:13px; }
+@keyframes generation-breathe { 50% { transform:scale(1.06); box-shadow:0 12px 34px rgba(64,91,73,.12); } }
+@keyframes generation-blink { to { opacity:.25; } }
+@keyframes generation-slide { 0% { transform:translateX(-110%); } 100% { transform:translateX(300%); } }
