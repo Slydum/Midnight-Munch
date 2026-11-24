@@ -58,7 +58,12 @@ export default {async fetch(request,env){
   const prompt=`Create a weekly meal plan for a household in the Philippines. Return ONLY JSON: {"summary":"short","meals":[{"date":"YYYY-MM-DD","meal_type":"Breakfast|Lunch|Dinner|Snacks","name":"Recipe","description":"short","servings":2,"prep_minutes":15,"cook_minutes":15,"prep_effort":"one-pan","estimated_cost_php":120,"ingredients":[{"name":"tofu","qty":300,"unit":"g","section":"Others"}],"nutrition_tags":["protein"],"plant_based":true,"instructions":["Step 1","Step 2"]}]}. Produce exactly one recipe for each date and selected meal type. Dates: ${dates.join(", ")}. Types: ${types.join(", ")}. Respect dietary preference, allergies and exclusions strictly. Prefer affordable, common Philippine ingredients and ingredient overlap. Scale quantities to ${prefs.servings} servings. Keep total estimated cost within PHP ${prefs.budget} if realistic. Favorites: ${JSON.stringify(prefs.favorites)}. Avoid: ${JSON.stringify(prefs.dislikes)}. Appliances: ${JSON.stringify(prefs.appliances)}. Preferences: ${JSON.stringify(prefs)}. Costs are estimates, never claim live prices.`;
   try{
    const upstream=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","X-goog-api-key":env.GEMINI_API_KEY},body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json",temperature:0.6,maxOutputTokens:14000}})});
-   if(!upstream.ok)return json({error:upstream.status===429?"Meal generation limit reached. Try again later.":"Meal generation provider is temporarily unavailable."},502,origin);
+   if(!upstream.ok){
+    const detail=await upstream.text();
+    console.error("Gemini generation provider error",upstream.status,detail.slice(0,1200));
+    const message=upstream.status===429?"Meal generation limit reached. Try again later.":upstream.status===401||upstream.status===403?"Meal generation authentication failed. The app administrator needs to check the Gemini API key and API access.":upstream.status===404?"The configured Gemini model or API endpoint was not found.":upstream.status>=500?"Google's meal generation service is temporarily having trouble. Please try again shortly.":`Gemini rejected the meal request (HTTP ${upstream.status}).`;
+    return json({error:message},502,origin);
+   }
    const data=await upstream.json(),raw=data.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"",plan=JSON.parse(raw);
    if(!Array.isArray(plan.meals)||plan.meals.length!==dates.length*types.length)return json({error:"The generated plan was incomplete. Please try again."},502,origin);
    return json(plan,200,origin);
