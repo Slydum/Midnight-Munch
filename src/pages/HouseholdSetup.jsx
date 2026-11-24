@@ -1,7 +1,4 @@
 import {useState} from 'react';
-import {db} from '../lib/supabase.js';
-import {weekStartOf,isoDate} from '../lib/mealGenerator.js';
-import {requestAiMealPlan,toMealRecord,findMealImage} from '../lib/aiMealPlanner.js';
 
 const MEALS=[
  {name:'Breakfast',note:'quick + repeatable',tone:'butter'},
