@@ -65,6 +65,7 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
    household_access:'local',grocery_pricing:'estimates',onboarding_completed:false
   };
   try{
+   if(editing){await onSave({...profile,onboarding_completed:true});onComplete?.();return;}
    await onSave(profile);
    const start=weekStartOf(new Date());
    const weekStart=isoDate(start);
@@ -90,6 +91,7 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
  const submit=async e=>{
   e.preventDefault();
   if(step<STEPS.length-1){next();return;}
+  if(!Number.isFinite(Number(form.budget_ceiling))||Number(form.budget_ceiling)<=0){setError('Enter a weekly budget greater than ₱0.');return;}
   await finishSetup();
  };
  const count=(label,key,portion)=> <div className="people-card">
