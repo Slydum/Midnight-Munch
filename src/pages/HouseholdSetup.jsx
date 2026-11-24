@@ -89,7 +89,7 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
    <button type="button" className="minimal-back" onClick={step?back:()=>window.history.back()} aria-label="Go back">‹</button>
    <div className="minimal-progress"><span style={{width:`${((step+1)/STEPS.length)*100}%`}}/></div>
   </div>
-  {saving&&<section className="generation-screen" role="status"><div className="generation-orbit"><span>m.</span></div><p className="eyebrow">THE HOUSEHOLD KITCHEN</p><h1>Generating your meals<span className="generation-dots">…</span></h1><p>Building a week around your household, food preferences and budget.</p><div className="generation-progress"><span/></div><small>Checking ingredients · portions · estimated costs</small></section>}
+  {saving&&<section className="generation-screen" role="status"><div className="generation-orbit"><span>m.</span></div><p className="eyebrow">THE HOUSEHOLD KITCHEN</p><h1>Saving your household<span className="generation-dots">…</span></h1><p>Your preferences are being saved. Your first personalized meal plan will be built next.</p><div className="generation-progress"><span/></div><small>Household size · food preferences · weekly budget</small></section>}
   {!saving&&<form className="minimal-form" onSubmit={submit}>
    <header className="minimal-heading"><h1>{editing?STEPS[step]==='People'?'Who’s eating?':currentTitles[step]:currentTitles[step]}</h1><p>{subtitles[step]}</p></header>
    {step===0&&<section className="minimal-content">
