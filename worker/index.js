@@ -43,6 +43,25 @@ export default {
     if (request.method === "GET" && url.pathname === "/health") {
       return json({ ok: true, service: "midnight-munch-api" }, 200, origin);
     }
+    if (request.method === "GET" && url.pathname === "/diagnostics") {
+      if (!env.GEMINI_API_KEY) return json({ ok: false, stage: "secret", error: "GEMINI_API_KEY is missing from the deployed Worker." }, 503, origin);
+      try {
+        const probe = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-goog-api-key": env.GEMINI_API_KEY },
+          body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Reply with OK only." }] }], generationConfig: { maxOutputTokens: 8 } }),
+        });
+        if (!probe.ok) {
+          const detail = await probe.text();
+          console.error("Gemini diagnostics failed", probe.status, detail.slice(0, 1000));
+          return json({ ok: false, stage: "gemini", status: probe.status, error: "Gemini rejected the test request. Check Worker logs for the provider's exact error." }, 502, origin);
+        }
+        return json({ ok: true, stage: "gemini", model: MODEL, message: "Gemini API connection is working." }, 200, origin);
+      } catch (error) {
+        console.error("Gemini diagnostics network failure", error?.message || error);
+        return json({ ok: false, stage: "network", error: "Cloudflare could not reach the Gemini API." }, 502, origin);
+      }
+    }
     if (request.method !== "POST" || url.pathname !== "/generate-meals") {
       return json({ error: "Not found" }, 404, origin);
     }
