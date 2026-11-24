@@ -508,3 +508,9 @@ button,input,select,textarea { font-family:var(--mm-font-ui); }
 @keyframes generation-breathe { 50% { transform:scale(1.06); box-shadow:0 12px 34px rgba(64,91,73,.12); } }
 @keyframes generation-blink { to { opacity:.25; } }
 @keyframes generation-slide { 0% { transform:translateX(-110%); } 100% { transform:translateX(300%); } }
+
+
+/* Recipe imagery */
+.meal-photo-wrap { position:relative; margin:-2px -2px 12px; overflow:hidden; border-radius:13px; background:#eee9df; }
+.meal-photo { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; }
+.meal-photo-credit { position:absolute; right:8px; bottom:7px; padding:3px 6px; border-radius:5px; background:rgba(25,30,24,.62); color:#fff; font-size:9px; letter-spacing:.02em; }
