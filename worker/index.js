@@ -83,7 +83,6 @@ export default {
     if (request.method !== "POST" || url.pathname !== "/generate-meals") {
       return json({ error: "Not found" }, 404, origin);
     }
-    if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "Origin not allowed" }, 403, origin);
     if (!env.GEMINI_API_KEY) return json({ error: "The Gemini API secret is not configured. Add GEMINI_API_KEY in Worker settings." }, 503, origin);
 
     let body;
@@ -151,7 +150,7 @@ Rules:
 - Household preferences: ${JSON.stringify(preferences)}.
 - Output valid JSON only, no markdown fences.`;
 
-    console.info("Meal generation input validated", { dates: dates.length, mealTypes: input.mealTypes.length, portions: input.portions, budget: input.budget });
+    console.info("Meal generation input validated", { origin, dates: dates.length, mealTypes: input.mealTypes.length, portions: input.portions, budget: input.budget });
     let response;
     try {
       const result = await callGemini(env, {
