@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {db} from '../lib/supabase.js';
 import {weekStartOf,isoDate} from '../lib/mealGenerator.js';
-import {requestAiMealPlan,toMealRecord} from '../lib/aiMealPlanner.js';
+import {requestAiMealPlan,toMealRecord,findMealImage} from '../lib/aiMealPlanner.js';
 
 const MEALS=[
  {name:'Breakfast',note:'quick + repeatable',tone:'butter'},
@@ -72,7 +72,7 @@ export default function HouseholdSetup({settings,onSave,onComplete,editing=false
    const dayIndex={Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6};
    const dates=form.planning_days.map(day=>{const d=new Date(start);d.setDate(d.getDate()+dayIndex[day]);return isoDate(d);});
    const result=await requestAiMealPlan(profile,dates);
-   const records=result.meals.map(toMealRecord);
+   const records=await Promise.all(result.meals.map(async recipe=>toMealRecord(recipe,await findMealImage(recipe.name))));
    const slots={};
    dates.forEach(date=>{slots[date]={};form.meal_types.forEach(type=>{slots[date][type]=null;});});
    result.meals.forEach((recipe,index)=>{
