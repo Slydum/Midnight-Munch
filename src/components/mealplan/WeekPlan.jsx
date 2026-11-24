@@ -18,6 +18,9 @@ export default function WeekPlan({
   onSavePlan,
   onSaveWeekTemplate,
   onAddLeftover,
+  reviewMode = false,
+  onRegenerateDay,
+  busyDay = null,
 }) {
   const [swapTarget, setSwapTarget] = useState(null); // {date, slot}
   const [swapTick, setSwapTick] = useState(0); // re-keys cards to replay the swap animation
@@ -93,8 +96,8 @@ export default function WeekPlan({
   return (
     <>
       <div className="row" style={{ marginBottom: 12 }}>
-        <button className="btn btn-cta" onClick={() => generate(plan)}>↻ Regenerate week</button>
-        <button className="btn btn-ghost" onClick={() => setSaveName('')}>★ Save this week</button>
+        {!reviewMode && <button className="btn btn-cta" onClick={() => generate(plan)}>↻ Regenerate week</button>}
+        {!reviewMode && <button className="btn btn-ghost" onClick={() => setSaveName('')}>★ Save this week</button>}
         {savedWeeks.length > 0 && (
           <button className="btn btn-ghost" onClick={() => setShowApply(true)}>Use a saved week</button>
         )}
@@ -105,8 +108,8 @@ export default function WeekPlan({
         {dates.map((date, i) => (
           <div className="card plan-day" key={date}>
             <div className="card-title">{DAY_NAMES[i]} <span className="muted">{date.slice(5)}</span></div>
-            <button className="btn btn-ghost btn-sm" onClick={() => generate(plan, date)} style={{ marginBottom: 4 }}>
-              ↻ Regenerate day
+            <button className="btn btn-ghost btn-sm" onClick={() => onRegenerateDay ? onRegenerateDay(date) : generate(plan, date)} disabled={!!busyDay} style={{ marginBottom: 4 }}>
+              {busyDay === date ? 'Finding new meals…' : '↻ Regenerate this day'}
             </button>
             {activeSlots.map((slot) => {
               const slotData = plan.slots?.[date]?.[slot];
