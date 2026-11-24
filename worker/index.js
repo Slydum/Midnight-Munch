@@ -55,7 +55,7 @@ export default {
     try { input = validateInput(body); } catch (error) { return json({ error: error.message }, 400, origin); }
 
     const dates = Array.isArray(body.dates) ? body.dates : [];
-    if (dates.length !== input.days.length || dates.some((date) => !/^\\d{4}-\\d{2}-\\d{2}$/.test(date))) return json({ error: "The selected dates are invalid. Please restart setup." }, 400, origin);
+    if (dates.length !== input.days.length || dates.some((date) => !/^\d{4}-\d{2}-\d{2}$/.test(date))) return json({ error: "The selected dates are invalid. Please restart setup." }, 400, origin);
 
     const preferences = {
       householdName: cleanText(body.household_name, 80),
