@@ -35,6 +35,28 @@ function validateInput(body) {
   return { days, mealTypes, portions, budget };
 }
 
+async function callGemini(env, payload) {
+  const models = [MODEL, "gemini-3.5-flash-lite"];
+  let lastResponse;
+  let activeModel = MODEL;
+  for (const model of models) {
+    activeModel = model;
+    try {
+      lastResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-goog-api-key": env.GEMINI_API_KEY },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error("Gemini network request failed", model, error?.message || error);
+      throw error;
+    }
+    if (lastResponse.ok || ![404, 503].includes(lastResponse.status)) break;
+    console.warn("Gemini model unavailable; trying fallback", model, lastResponse.status);
+  }
+  return { response: lastResponse, model: activeModel };
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
@@ -46,17 +68,13 @@ export default {
     if (request.method === "GET" && url.pathname === "/diagnostics") {
       if (!env.GEMINI_API_KEY) return json({ ok: false, stage: "secret", error: "GEMINI_API_KEY is missing from the deployed Worker." }, 503, origin);
       try {
-        const probe = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-goog-api-key": env.GEMINI_API_KEY },
-          body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Reply with OK only." }] }], generationConfig: { maxOutputTokens: 8 } }),
-        });
+        const { response: probe, model } = await callGemini(env, { contents: [{ role: "user", parts: [{ text: "Reply with OK only." }] }], generationConfig: { maxOutputTokens: 8 } });
         if (!probe.ok) {
           const detail = await probe.text();
-          console.error("Gemini diagnostics failed", probe.status, detail.slice(0, 1000));
-          return json({ ok: false, stage: "gemini", status: probe.status, error: "Gemini rejected the test request. Check Worker logs for the provider's exact error." }, 502, origin);
+          console.error("Gemini diagnostics failed", model, probe.status, detail.slice(0, 1000));
+          return json({ ok: false, stage: "gemini", model, status: probe.status, error: "Gemini rejected the request on the primary and fallback models. Check Worker logs." }, 502, origin);
         }
-        return json({ ok: true, stage: "gemini", model: MODEL, message: "Gemini API connection is working." }, 200, origin);
+        return json({ ok: true, stage: "gemini", model, message: "Gemini API connection is working." }, 200, origin);
       } catch (error) {
         console.error("Gemini diagnostics network failure", error?.message || error);
         return json({ ok: false, stage: "network", error: "Cloudflare could not reach the Gemini API." }, 502, origin);
@@ -135,14 +153,12 @@ Rules:
 
     let response;
     try {
-      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-goog-api-key": env.GEMINI_API_KEY },
-      body: JSON.stringify({
+      const result = await callGemini(env, {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: "application/json", temperature: 0.7, maxOutputTokens: 16000 },
-      }),
       });
+      response = result.response;
+      console.info("Gemini meal generation model", result.model);
     } catch (error) {
       console.error("Gemini network request failed", error?.message || error);
       return json({ error: "Cloudflare could not reach Gemini. Please retry in a moment." }, 502, origin);
