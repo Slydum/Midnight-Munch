@@ -1,17 +1,18 @@
 # Midnight Munch API Worker
 
-This Worker keeps the Gemini API key server-side and generates weekly meal plans.
+The Cloudflare Worker proxies live recipe searches through Tavily. Provider credentials remain server-side.
 
-## Cloudflare dashboard setup
+## Secret
 
-1. Open the `midnight-munch-api` Worker.
-2. Choose **Edit code** and replace the starter `worker.js` contents with `worker/index.js` from this repository.
-3. Open **Settings → Variables and Secrets**. Confirm there is a Production **Secret** named exactly `GEMINI_API_KEY`.
-4. Deploy the edited Worker.
-5. Test `https://midnight-munch-api.yuripremiums.workers.dev/health` and expect `{"ok":true,"service":"midnight-munch-api"}`.
+In Cloudflare Worker **Settings → Variables and Secrets**, add a Production secret named exactly `TAVILY_API_KEY`. Never put the key in GitHub or browser code.
 
-The Worker allows requests only from `https://slydum.github.io` and local Vite development. It uses Gemini 3.8 Flash through the Gemini API. Do not put the secret in the repository or website code.
+## Endpoints
 
-## Endpoint
+- `GET /health` checks that the Worker is deployed and reports whether recipe search is configured.
+- `POST /search-recipes` accepts `{ "query": "tofu adobo", "limit": 8 }` and returns web results, source links, images where available, and recipe ingredients/instructions extracted from Recipe JSON-LD when the source page exposes it.
 
-`POST /generate-meals` accepts household settings, selected dates, selected meal types, portions, diet, allergies, exclusions, appliances and weekly PHP budget. It returns a JSON plan with one recipe per selected date and meal type.
+The browser calls this Worker from the GitHub Pages app. Results without structured recipe data remain link-and-excerpt results; the app does not invent missing ingredients or steps.
+
+## Deploy
+
+Deploy `worker/index.js` as the `midnight-munch-api` Worker with `wrangler deploy`, or paste the file into the Cloudflare dashboard editor and deploy.
