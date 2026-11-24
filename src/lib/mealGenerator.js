@@ -151,7 +151,7 @@ export function generateWeekPlan(opts) {
     slots[date] = Object.fromEntries(mealTypes.map((slot) => [slot, null]));
     const prev = existingPlan?.slots?.[date];
     if (prev) {
-      for (const s of SLOTS) {
+      for (const s of mealTypes) {
         const keep = onlyDate ? date !== onlyDate || prev[s]?.locked : prev[s]?.locked;
         if (keep && prev[s]) slots[date][s] = prev[s];
       }
@@ -206,7 +206,7 @@ export function generateWeekPlan(opts) {
     mealTypes.reduce((sum, s) => sum + remainingBySlot[s] * cheapestBySlot[s], 0);
 
   for (const date of dates) {
-    for (const slot of SLOTS) {
+    for (const slot of mealTypes) {
       if (slots[date][slot]) continue; // locked/kept
       remainingBySlot[slot]--; // this slot is being filled now
 
