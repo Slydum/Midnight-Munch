@@ -10,9 +10,10 @@ export default function DashboardPage() {
   const { currentPlan, pastPlans } = usePlans();
   const { settings, save } = useSettings();
   const { leftovers } = useLeftovers();
+  const activeSlots = settings.meal_types?.length ? settings.meal_types : SLOTS;
   const today = isoDate(new Date());
   const todaySlots = currentPlan?.slots?.[today];
-  const mealCount = todaySlots ? SLOTS.filter(slot => todaySlots[slot]?.meal_id).length : 0;
+  const mealCount = todaySlots ? activeSlots.filter(slot => todaySlots[slot]?.meal_id).length : 0;
 
   return (
     <section className="today-page">
@@ -26,7 +27,7 @@ export default function DashboardPage() {
         </div>
         <div className="welcome-note">
           <span className="note-label">TODAY AT A GLANCE</span>
-          <div className="note-number">{String(mealCount).padStart(2,'0')}<small>/ 03</small></div>
+          <div className="note-number">{String(mealCount).padStart(2,'0')}<small>/ {String(activeSlots.length).padStart(2,'0')}</small></div>
           <p>meals planned for today</p>
           <div className="note-rule"/>
           <span className="note-date">{today}</span>
@@ -36,7 +37,7 @@ export default function DashboardPage() {
       <div className="section-heading"><div><span className="eyebrow">THE DAILY TABLE</span><h2>Today's lineup</h2></div><Link to="/plan" className="subtle-link">See full week ↗</Link></div>
       <section className="today-meals card">
         {!todaySlots && <div className="empty-plan"><div className="empty-icon">✳</div><div><strong>No meals on the table yet.</strong><p>Build a plan for the week and let dinner stop being a daily mystery.</p></div><Link to="/plan" className="primary-link">Create a meal plan ↗</Link></div>}
-        {todaySlots && SLOTS.map((slot,index) => {
+        {todaySlots && activeSlots.map((slot,index) => {
           const s = todaySlots[slot];
           const meal = s?.meal_id ? mealsById[s.meal_id] : null;
           return <div className="today-meal-row" key={slot}><span className="meal-index">0{index+1}</span><span className="meal-time">{SLOT_LABELS[slot]}</span><strong>{meal ? `${meal.plant_based ? '🌱 ' : ''}${meal.name}${s.leftover ? ' · leftovers' : ''}` : 'Nothing planned'}</strong><span className="meal-status">{meal ? 'ON THE MENU' : 'OPEN SLOT'}</span></div>;
